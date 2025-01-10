@@ -19,7 +19,11 @@ if not TOKEN:
 
 # Lista de usuarios autorizados (IDs de Discord)
 # [Frank, Andrea, Bryan]
-AUTHORIZED_USERS = os.getenv("AUTHORIZED_USERS").split(",")
+AUTHORIZED_USERS = os.getenv("AUTHORIZED_USERS")
+if AUTHORIZED_USERS:
+    AUTHORIZED_USERS = list(map(int, AUTHORIZED_USERS.split(",")))
+else:
+    AUTHORIZED_USERS = []
 
 # ID del canal donde se gestionarán las contraseñas
 PASSWORD_CHANNEL_ID = int(os.getenv("PASSWORD_CHANNEL_ID"))
