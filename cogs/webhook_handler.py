@@ -24,7 +24,7 @@ class WebhookHandler(commands.Cog):
 
             print(f"[WebhookHandler] Event type: {event_type}")
 
-            if event_type != "git.pullrequest.merged":
+            if event_type != "git.pullrequest.created":
                 return web.Response(status=200, text="Ignored event type")
 
             # Extract relevant information
@@ -37,6 +37,12 @@ class WebhookHandler(commands.Cog):
             repo = resource.get("repository", {}).get("name", "Unknown")
             source_branch = resource.get("sourceRefName", "Unknown").split('/')[-1]
             target_branch = resource.get("targetRefName", "Unknown").split('/')[-1]
+            
+            print(f"[WebhookHandler] Title: {title}")
+            print(f"[WebhookHandler] Author: {author}")
+            print(f"[WebhookHandler] Repository: {repo}")
+            print(f"[WebhookHandler] Source Branch: {source_branch}")
+            print(f"[WebhookHandler] Target Branch: {target_branch}")
 
             # Get the thread where the message will be sent
             guild = self.bot.get_guild(TECH_SERVER_ID)
@@ -49,7 +55,7 @@ class WebhookHandler(commands.Cog):
 
             # Send message to the channel
             message = (
-                f"✅ **Pull Request Approved**\n"
+                f"🚀 **Pull Request Created**\n"
                 f"**Title:** {title}\n"
                 f"**Author:** {author}\n"
                 f"**Repository:** {repo}\n"
