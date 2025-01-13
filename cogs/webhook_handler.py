@@ -2,6 +2,8 @@ from aiohttp import web
 from discord.ext import commands
 import discord
 import os
+import asyncio
+import json
 
 # Environment variables
 TECH_SERVER_ID = int(os.getenv("TECH_SERVER_ID", 0))
@@ -21,6 +23,9 @@ class WebhookHandler(commands.Cog):
         try:
             # Parse the incoming webhook payload
             data = await request.json()
+            
+            print("[WebhookHandler] Full webhook payload:")
+            print(json.dumps(data, indent=4))
 
             event_type = data.get("eventType")
             if not event_type:
@@ -38,12 +43,19 @@ class WebhookHandler(commands.Cog):
                 return web.Response(status=400, text="Missing PR ID")
 
             title = resource.get("title", "No Title")
+            description = resource.get("description", "").strip()
+            if not description:
+                description = "No Description Provided"
             author = resource.get("createdBy", {}).get("displayName", "Unknown")
             repo = resource.get("repository", {}).get("name", "Unknown")
             source_branch = resource.get("sourceRefName", "Unknown").split('/')[-1]
             target_branch = resource.get("targetRefName", "Unknown").split('/')[-1]
             status = resource.get("status", "Unknown")
             pr_url = resource.get("_links", {}).get("web", {}).get("href", "#")
+            reviewers = resource.get("reviewers", [])
+            reviewers_list = ", ".join([r.get("displayName", "Unknown") for r in reviewers]).strip()
+            if not reviewers_list:
+                reviewers_list = "No Reviewers Assigned"
 
             # Get the server and thread
             guild = self.bot.get_guild(TECH_SERVER_ID)
@@ -64,10 +76,12 @@ class WebhookHandler(commands.Cog):
                 embed = discord.Embed(
                     title="🚀 Pull Request Created",
                     description=f"**Title:** [{title}]({pr_url})\n"
+                                f"**Description:** {description}\n"
                                 f"**Author:** {author}\n"
                                 f"**Repository:** {repo}\n"
                                 f"**Branch:** `{source_branch}` → `{target_branch}`\n"
                                 f"**PR ID:** `{pr_id}`\n"
+                                f"**Reviewers:** {reviewers_list}\n"
                                 f"**Status:** Created",
                     color=discord.Color.yellow()
                 )
@@ -95,10 +109,12 @@ class WebhookHandler(commands.Cog):
                         updated_embed = discord.Embed(
                             title="✅ Pull Request Completed",
                             description=f"**Title:** [{title}]({stored_pr_url})\n"
+                                        f"**Description:** {description}\n"
                                         f"**Author:** {author}\n"
                                         f"**Repository:** {repo}\n"
                                         f"**Branch:** `{source_branch}` → `{target_branch}`\n"
                                         f"**PR ID:** `{pr_id}`\n"
+                                        f"**Reviewers:** {reviewers_list}\n"
                                         f"**Status:** {status.capitalize()}",
                             color=discord.Color.yellow() if status.lower() == "active" else discord.Color.green()
                         )
@@ -113,8 +129,12 @@ class WebhookHandler(commands.Cog):
                                         f"has been merged from `{source_branch}` into `{target_branch}`.",
                             color=discord.Color.green()
                         )
-                        await thread.send(embed=merge_notification)
+                        notification_message = await thread.send(embed=merge_notification)
                         print(f"[WebhookHandler] PR {pr_id} merged notification sent.")
+                        
+                            # Wait 10 seconds, then delete the message
+                        await asyncio.sleep(10)
+                        await notification_message.delete()
 
             return web.Response(status=200, text="OK")
 
