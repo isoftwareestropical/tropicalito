@@ -35,7 +35,7 @@ def get_discord_mention(reviewer_name: str) -> str:
         return f"<@{ANDREA_ID}>"
     elif "bryan" in name_lower:
         return f"<@{BRYAN_ID}>"
-    elif "gerencia ti" in name_lower:
+    elif "gerencia ti" in name_lower or "jorge" in name_lower:
         return f"<@{GERENCIA_TI_ID}>"
     elif "kevin" in name_lower:
         return f"<@{KEVIN_ID}>"
