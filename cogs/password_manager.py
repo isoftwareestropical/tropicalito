@@ -90,7 +90,7 @@ class PasswordManager(commands.Cog):
         # Clear messages and update the password
         await channel.purge()
         message = await channel.send(
-            f"🔒 **Updated Isoftware Password:** `{password}` 🔑\n"
+            f"🔒 **Updated isoftware password:** `{password}` 🔑\n"
             f"👤 **Last updated by:** {user.mention}"
         )
         await message.pin()

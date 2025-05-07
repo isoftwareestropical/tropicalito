@@ -11,7 +11,7 @@ TECH_CHANNEL_ID = int(os.getenv("TECH_CHANNEL_ID", 0))
 TECH_THREAD_ID = int(os.getenv("TECH_THREAD_ID", 0))
 
 ADRIANA_ID = os.getenv("ADRIANA_ID", "0")
-ANDREA_ID = os.getenv("ANDREA_ID", "0")
+ANDRES_ID = os.getenv("ANDRES_ID", "0")
 BRYAN_ID = os.getenv("BRYAN_ID", "0")
 GERENCIA_TI_ID = os.getenv("GERENCIA_TI_ID", "0")
 KEVIN_ID = os.getenv("KEVIN_ID", "0")
@@ -31,8 +31,8 @@ def get_discord_mention(reviewer_name: str) -> str:
     # Simple name checks; adjust as needed for your naming patterns
     if "adriana" in name_lower:
         return f"<@{ADRIANA_ID}>"
-    elif "andrea" in name_lower:
-        return f"<@{ANDREA_ID}>"
+    elif "andres" in name_lower:
+        return f"<@{ANDRES_ID}>"
     elif "bryan" in name_lower:
         return f"<@{BRYAN_ID}>"
     elif "gerencia ti" in name_lower or "jorge" in name_lower:
@@ -44,7 +44,6 @@ def get_discord_mention(reviewer_name: str) -> str:
     elif "franklin" in name_lower:
         return f"<@{FRANKLIN_ID}>"
     else:
-        # Fallback if you don't have them mapped
         return reviewer_name
 
 class WebhookHandler(commands.Cog):
